@@ -38,7 +38,16 @@ class Order(models.Model):
 
     def __str__(self):
         return str(self.id)
-    
+
+    @property
+    def shipping(self):
+        shipping = False
+        orderItems = self.orderitem_set.all()
+        for i in orderItems:
+            if i.product.digital == False:
+                shipping = True
+        return shipping
+
     @property
     def get_cart_total(self):
         orderItems = self.orderitem_set.all()
@@ -57,7 +66,7 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, blank=True, null=True)
     quantity = models.IntegerField(default=0, null=True, blank=True)
     date_added = models.DateTimeField(auto_now_add=True)
-    
+
     @property
     def get_total(self):
         total = self.product.price * self.quantity
